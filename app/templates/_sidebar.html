@@ -1,0 +1,10 @@
+<nav class="side">
+  <h1>Telegram Watcher</h1>
+  <a href="/feed" {% if current_path == '/feed' %}class="active"{% endif %}>Feed</a>
+  <a href="/digest" {% if current_path == '/digest' %}class="active"{% endif %}>Daily digest</a>
+  <a href="/digest/window" {% if current_path == '/digest/window' %}class="active"{% endif %}>Digest window</a>
+  <div style="margin-top:24px;font-size:11px;color:#999;padding:0 10px;">
+    Run<br>
+    <code style="color:#666;font-size:11px;">python -m app.supervisor</code>
+  </div>
+</nav>

@@ -1,0 +1,16 @@
+services:
+  watcher:
+    build: .
+    container_name: telegram-watcher
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      # SQLite + Telethon session persist on host
+      - ./data:/app/data
+      # Claude CLI authentication state — login once on host with `claude login`
+      - ~/.claude:/root/.claude
+    # NB: setup_session needs interactive stdin once; run:
+    #   docker compose run --rm watcher python -m app.setup_session
+    # before the first `up -d`.

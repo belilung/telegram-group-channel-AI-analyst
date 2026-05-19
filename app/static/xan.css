@@ -1,0 +1,885 @@
+/* Xan CRM Design System — Dark Only MVP */
+
+/* =========================================
+   1. DESIGN TOKENS
+   ========================================= */
+
+:root {
+  /* Surfaces */
+  --bg-base: #0D0D0D;
+  --bg-panel: #161616;
+  --bg-elevated: #1C1C1C;
+  --border: #222222;
+
+  /* Brand */
+  --xan-blue: #3B82F6;
+  --xan-blue-hover: #2563EB;
+
+  /* Semantic */
+  --ok: #34D399;
+  --warn: #FBBF24;
+  --err: #FB7185;
+
+  /* Typography */
+  --text-primary: #F1F5F9;
+  --text-muted: #64748B;
+  --font-ui: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+
+  /* Elevation */
+  --shadow-cta: 0 0 20px rgba(59, 130, 246, 0.4);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+/* =========================================
+   2. RESET + BASE
+   ========================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--xan-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+}
+
+/* =========================================
+   3. LAYOUT — SIDEBAR + CONTENT GRID
+   ========================================= */
+
+.xan-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.xan-content {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* =========================================
+   4. SIDEBAR
+   ========================================= */
+
+.xan-sidebar {
+  width: 260px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.xan-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.xan-nav-section {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  padding: 16px 20px 8px;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.xan-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.xan-nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+  text-decoration: none;
+}
+
+.xan-nav-link.is-active {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.xan-nav-link.is-active .xan-nav-icon {
+  color: var(--xan-blue);
+}
+
+.xan-nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: color var(--duration-normal) var(--ease-smooth);
+}
+
+.xan-nav-link:hover .xan-nav-icon {
+  opacity: 1;
+}
+
+/* =========================================
+   5. HEADER
+   ========================================= */
+
+.xan-header {
+  position: sticky;
+  top: 0;
+  height: 64px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.xan-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.xan-subnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.xan-subnav a {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-smooth);
+  text-decoration: none;
+}
+
+.xan-subnav a:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.xan-subnav a.is-active {
+  color: var(--xan-blue);
+}
+
+.xan-search {
+  position: relative;
+}
+
+.xan-search input {
+  height: 36px;
+  width: 224px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-smooth);
+}
+
+.xan-search input:focus {
+  border-color: var(--xan-blue);
+}
+
+.xan-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.xan-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  background: var(--xan-blue);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  box-shadow: var(--shadow-cta);
+  transition: background 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.xan-cta:hover {
+  background: var(--xan-blue-hover);
+  box-shadow: 0 0 28px rgba(59, 130, 246, 0.5);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* =========================================
+   6. MAIN CONTENT AREA
+   ========================================= */
+
+.xan-main {
+  flex: 1;
+  padding: 32px;
+}
+
+/* =========================================
+   7. SUMMARY METRICS STRIP
+   ========================================= */
+
+.xan-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.xan-metric {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color var(--duration-normal) var(--ease-smooth);
+}
+
+.xan-metric:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.xan-metric--gradient {
+  background: linear-gradient(135deg, var(--xan-blue), var(--xan-blue-hover));
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.xan-metric--gradient .xan-metric-label,
+.xan-metric--gradient .xan-metric-value {
+  color: #ffffff;
+}
+
+.xan-metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.xan-metric--gradient .xan-metric-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.xan-metric-icon--ok   { background: rgba(52, 211, 153, 0.1); }
+.xan-metric-icon--warn { background: rgba(251, 191, 36, 0.1); }
+.xan-metric-icon--err  { background: rgba(251, 113, 133, 0.1); }
+.xan-metric-icon--info { background: rgba(59, 130, 246, 0.1); }
+
+.xan-metric-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.xan-metric-value {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* =========================================
+   8. DATA TABLE
+   ========================================= */
+
+.xan-table-wrap {
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.xan-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.xan-table thead {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.xan-table thead th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  padding: 12px 20px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.xan-table tbody tr {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--duration-fast) var(--ease-smooth);
+}
+
+.xan-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.xan-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.xan-table tbody td {
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.xan-table td.mono,
+.xan-table th.mono {
+  font-family: var(--font-mono);
+}
+
+/* =========================================
+   9. SPOTLIGHT CARD
+   ========================================= */
+
+.xan-card {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  overflow: hidden;
+  transition: border-color var(--duration-normal) var(--ease-smooth);
+}
+
+.xan-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-smooth);
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(59, 130, 246, 0.08) 0%,
+    transparent 70%
+  );
+}
+
+.xan-card:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.xan-card:hover::before {
+  opacity: 1;
+}
+
+.xan-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.xan-card-body {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* =========================================
+   10. STATUS BADGE
+   ========================================= */
+
+.xan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: var(--font-ui);
+  white-space: nowrap;
+}
+
+.xan-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+.xan-badge--ok {
+  color: var(--ok);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.xan-badge--warn {
+  color: var(--warn);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.xan-badge--err {
+  color: var(--err);
+  background: rgba(251, 113, 133, 0.1);
+}
+
+.xan-badge--info {
+  color: var(--xan-blue);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+    opacity: 0.6;
+  }
+}
+
+/* =========================================
+   11. BULK ACTIONS BAR
+   ========================================= */
+
+.xan-bulk {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--xan-blue);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.xan-bulk-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--xan-blue);
+  flex-shrink: 0;
+}
+
+.xan-bulk-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
+}
+
+.xan-bulk-action {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-smooth);
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-ui);
+}
+
+.xan-bulk-action:hover {
+  color: var(--text-primary);
+}
+
+.xan-bulk-action--danger:hover {
+  color: var(--err);
+}
+
+/* =========================================
+   12. CHIP — inline filter toggle
+   ========================================= */
+
+.xan-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  background: transparent;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-smooth),
+              border-color var(--duration-fast) var(--ease-smooth),
+              background var(--duration-fast) var(--ease-smooth);
+  white-space: nowrap;
+}
+
+.xan-chip:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+}
+
+.xan-chip.is-active {
+  color: var(--xan-blue);
+  border-color: var(--xan-blue);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.xan-chip-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.xan-chip-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* =========================================
+   13. CUSTOM CHECKBOX
+   ========================================= */
+
+.xan-check {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.xan-check input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.xan-check-box {
+  width: 16px;
+  height: 16px;
+  background: #333333;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-smooth),
+              border-color var(--duration-fast) var(--ease-smooth);
+}
+
+.xan-check input[type="checkbox"]:checked + .xan-check-box {
+  background: var(--xan-blue);
+  border-color: var(--xan-blue);
+}
+
+.xan-check input[type="checkbox"]:checked + .xan-check-box::after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 6l3 3 5-5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 6l3 3 5-5'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* =========================================
+   13. UTILITY CLASSES
+   ========================================= */
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-ok   { color: var(--ok); }
+.text-warn { color: var(--warn); }
+.text-err  { color: var(--err); }
+.text-blue { color: var(--xan-blue); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================
+   14. SECTION HEADER
+   ========================================= */
+
+.xan-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.xan-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* =========================================
+   15. EMPTY STATE
+   ========================================= */
+
+.xan-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.xan-empty-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.xan-empty-body {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* =========================================
+   16. INBOX — ROW ACTIONS, TOGGLE, PAGER
+   ========================================= */
+
+/* Muted badge for spam / unknown categories */
+.xan-badge--muted {
+  color: var(--text-muted);
+  background: rgba(100, 116, 139, 0.1);
+}
+
+/* Ghost action buttons inside table rows */
+.xan-row-action {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--font-ui);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-smooth),
+              border-color var(--duration-fast) var(--ease-smooth);
+  margin-left: 4px;
+}
+
+.xan-row-action:first-child {
+  margin-left: 0;
+}
+
+.xan-row-action:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.xan-row-action--danger:hover {
+  color: var(--err);
+  border-color: var(--err);
+}
+
+/* Toggle switch (show bots) */
+.xan-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.xan-toggle-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.xan-toggle-track {
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-smooth),
+              border-color var(--duration-fast) var(--ease-smooth);
+}
+
+.xan-toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform var(--duration-fast) var(--ease-smooth),
+              background var(--duration-fast) var(--ease-smooth);
+}
+
+.xan-toggle-label input[type="checkbox"]:checked + .xan-toggle-track {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: var(--xan-blue);
+}
+
+.xan-toggle-label input[type="checkbox"]:checked + .xan-toggle-track::after {
+  transform: translateX(14px);
+  background: var(--xan-blue);
+}
+
+/* Pager row for inbox pagination */
+.xan-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}

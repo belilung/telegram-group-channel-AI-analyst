@@ -1,0 +1,53 @@
+{% extends "_base.html" %}
+
+{% block title %}Daily digest — Telegram Watcher{% endblock %}
+{% block page_title %}Daily digest{% if selected %} — {{ selected }}{% endif %}{% endblock %}
+
+{% block header_actions %}
+  {% for d in dates[:8] %}
+    <a href="/digest?date={{ d }}" class="chip {% if d == selected %}active{% endif %}">{{ d }}</a>
+  {% endfor %}
+{% endblock %}
+
+{% block content %}
+{% if not sections %}
+  <div class="empty">
+    <div class="empty-title">No digest for {{ selected or 'this date' }}</div>
+    <div>Build a digest with <code>python -m app.run_daily_digest --date {{ selected or 'YYYY-MM-DD' }}</code>.</div>
+  </div>
+{% else %}
+  {% for section in sections %}
+    <div class="group-section">
+      <h3 class="group-title">{{ section.group.title }}
+        <span class="badge">{{ section.group.topic_hint or '—' }}</span>
+      </h3>
+      {% if not section.entries %}
+        <div class="muted" style="font-size:12px;">(no relevant items)</div>
+      {% else %}
+      <table>
+        <thead>
+          <tr>
+            <th>Sender</th>
+            <th>Topic</th>
+            <th>Summary</th>
+            <th>Link</th>
+            <th>When</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in section.entries %}
+          <tr>
+            <td class="muted">{{ it.sender_name or '—' }}</td>
+            <td>{% if it.topic %}<strong>{{ it.topic }}</strong>{% else %}<span class="muted">—</span>{% endif %}</td>
+            <td style="max-width:480px;line-height:1.5;">{{ it.summary or '—' }}</td>
+            <td>{% if it.link %}<a class="link" href="{{ it.link }}" target="_blank" rel="noopener">open</a>{% endif %}</td>
+            <td class="mono" style="white-space:nowrap;">{{ it.ts | fmt_ts }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

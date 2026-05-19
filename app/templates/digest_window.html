@@ -1,0 +1,52 @@
+{% extends "_base.html" %}
+
+{% block title %}Digest window — Telegram Watcher{% endblock %}
+{% block page_title %}Digest window{% endblock %}
+
+{% block header_actions %}
+  <a href="/digest/window?window=2d" class="chip {% if window == '2d' %}active{% endif %}">2d</a>
+  <a href="/digest/window?window=7d" class="chip {% if window == '7d' %}active{% endif %}">7d</a>
+  <a href="/digest/window?window=30d" class="chip {% if window == '30d' %}active{% endif %}">30d</a>
+{% endblock %}
+
+{% block content %}
+{% if not days %}
+  <div class="empty">
+    <div class="empty-title">No digests in this window</div>
+    <div>Run <code>python -m app.run_daily_digest</code> to build yesterday's digest.</div>
+  </div>
+{% else %}
+  {% for day in days %}
+    <div class="day-block">
+      <h3 class="day-header">{{ day.date }}</h3>
+      {% for section in day.sections %}
+        <div class="group-section">
+          <h4 class="group-title">{{ section.group.title }}
+            <span class="badge">{{ section.group.topic_hint or '—' }}</span>
+          </h4>
+          {% if not section.entries %}
+            <div class="muted" style="font-size:12px;">(no relevant items)</div>
+          {% else %}
+          <table>
+            <thead>
+              <tr><th>Sender</th><th>Topic</th><th>Summary</th><th>Link</th><th>When</th></tr>
+            </thead>
+            <tbody>
+              {% for it in section.entries %}
+              <tr>
+                <td class="muted">{{ it.sender_name or '—' }}</td>
+                <td>{% if it.topic %}<strong>{{ it.topic }}</strong>{% endif %}</td>
+                <td style="max-width:480px;line-height:1.5;">{{ it.summary or '—' }}</td>
+                <td>{% if it.link %}<a class="link" href="{{ it.link }}" target="_blank" rel="noopener">open</a>{% endif %}</td>
+                <td class="mono" style="white-space:nowrap;">{{ it.ts | fmt_ts }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

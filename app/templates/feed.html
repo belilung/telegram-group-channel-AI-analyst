@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+
+{% block title %}Feed — Telegram Watcher{% endblock %}
+{% block page_title %}Feed{% endblock %}
+
+{% block header_actions %}
+  <a href="/feed?window=1d" class="chip {% if window == '1d' %}active{% endif %}">1d</a>
+  <a href="/feed?window=2d" class="chip {% if window == '2d' %}active{% endif %}">2d</a>
+  <a href="/feed?window=7d" class="chip {% if window == '7d' %}active{% endif %}">7d</a>
+  <a href="/feed?window=all" class="chip {% if window == 'all' %}active{% endif %}">All</a>
+{% endblock %}
+
+{% block content %}
+{% if not items %}
+  <div class="empty">
+    <div class="empty-title">No relevant messages in this window</div>
+    <div>Make sure the supervisor is running and groups are added (DB: <code>data/telegram_watcher.db</code>).</div>
+  </div>
+{% else %}
+  <table>
+    <thead>
+      <tr>
+        <th>Group</th>
+        <th>Sender</th>
+        <th>Topic</th>
+        <th>Summary</th>
+        <th>When</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>
+          {% if it.group %}
+            <div style="font-weight:600;">{{ it.group.title }}</div>
+            <div class="mono">{{ it.group.topic_hint or '—' }}</div>
+          {% else %}
+            <span class="mono">{{ it.msg.chat_id }}</span>
+          {% endif %}
+        </td>
+        <td class="muted">{{ it.msg.sender_name or '—' }}</td>
+        <td>{% if it.msg.topic %}<strong>{{ it.msg.topic }}</strong>{% else %}<span class="muted">—</span>{% endif %}</td>
+        <td style="max-width:520px;line-height:1.5;">{{ it.msg.summary or it.msg.text or '—' }}</td>
+        <td class="mono" style="white-space:nowrap;">{{ it.msg.ts | fmt_ts }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}
