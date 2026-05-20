@@ -23,9 +23,10 @@ import time
 from pathlib import Path
 
 from app.config import get_settings
+from tools.fs_security import secure_dir, secure_file
 from tools.message_store import MessageStore
 from tools.resolve_groups import resolve_and_persist
-from tools.telegram_client import build_client
+from tools.telegram_client import build_client, secure_session_files
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,9 +55,12 @@ def _build_code_callback(code_file: Path):
                     f"{WAIT_TIMEOUT_SEC}s"
                 )
             await asyncio.sleep(0.5)
-        code = code_file.read_text().strip()
-        code_file.unlink()
-        return code
+        secure_file(code_file)
+        try:
+            return code_file.read_text().strip()
+        finally:
+            if code_file.exists():
+                code_file.unlink()
 
     return _cb
 
@@ -78,24 +82,26 @@ def _build_password_callback(pw_file: Path):
                     f"{WAIT_TIMEOUT_SEC}s"
                 )
             time.sleep(0.5)
-        pw = pw_file.read_text().strip()
-        pw_file.unlink()
-        return pw
+        secure_file(pw_file)
+        try:
+            return pw_file.read_text().strip()
+        finally:
+            if pw_file.exists():
+                pw_file.unlink()
 
     return _cb
 
 
 async def _run() -> int:
     settings = get_settings()
-    if not settings.tg_api_id or not settings.tg_api_hash:
-        print("ERROR: TG_API_ID/TG_API_HASH not set in .env", file=sys.stderr)
-        return 2
-    if not settings.tg_phone:
-        print("ERROR: TG_PHONE not set in .env", file=sys.stderr)
+    try:
+        settings.validate_runtime()
+    except RuntimeError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
         return 2
 
-    settings.db_absolute_path.parent.mkdir(parents=True, exist_ok=True)
-    settings.sessions_dir.mkdir(parents=True, exist_ok=True)
+    secure_dir(settings.db_absolute_path.parent)
+    secure_dir(settings.sessions_dir)
     store = MessageStore(str(settings.db_absolute_path))
     await store.init_schema()
 
@@ -113,10 +119,11 @@ async def _run() -> int:
         code_callback=_build_code_callback(code_file),
         password=_build_password_callback(pw_file),
     )
+    # Telethon has just written the .session file — lock it down to 0600.
+    secure_session_files(settings)
     me = await client.get_me()
     print(
-        f"Logged in as: id={me.id} username=@{getattr(me, 'username', None)} "
-        f"name={getattr(me, 'first_name', '')} {getattr(me, 'last_name', '')}",
+        f"Logged in as: id={me.id} username=@{getattr(me, 'username', None)}",
         flush=True,
     )
 

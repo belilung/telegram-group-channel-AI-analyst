@@ -42,6 +42,10 @@ class Settings(BaseSettings):
 
     min_group_text_len: int = Field(default=30)
 
+    # Optional Bearer token for the dashboard. Required when dashboard_host is
+    # not a loopback address (see Settings.validate_runtime + supervisor.py).
+    dashboard_token: str = Field(default="")
+
     @property
     def db_absolute_path(self) -> Path:
         path = Path(self.db_path)
@@ -54,6 +58,27 @@ class Settings(BaseSettings):
     @property
     def session_file(self) -> Path:
         return self.sessions_dir / self.tg_session_name
+
+    def validate_runtime(self) -> None:
+        """Fail fast at process start with a friendly message.
+
+        Pydantic field defaults stay permissive so unit tests and stand-alone
+        Settings(...) construction keep working; instead we enforce required
+        secrets at the supervisor / setup_session entrypoints.
+        """
+        problems: list[str] = []
+        if not self.tg_api_id or self.tg_api_id <= 0:
+            problems.append("TG_API_ID must be a positive integer")
+        if not self.tg_api_hash or len(self.tg_api_hash) < 32:
+            problems.append("TG_API_HASH must be the 32-char hex string from my.telegram.org")
+        if not self.tg_phone or not self.tg_phone.startswith("+"):
+            problems.append("TG_PHONE must be in international format, e.g. +380XXXXXXXXX")
+        if problems:
+            joined = "\n  - ".join(problems)
+            raise RuntimeError(
+                f"Invalid .env configuration:\n  - {joined}\n"
+                f"See .env.example for the full list of required variables."
+            )
 
 
 @lru_cache(maxsize=1)

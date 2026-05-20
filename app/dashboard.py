@@ -10,6 +10,7 @@ Routes:
 
 from __future__ import annotations
 
+import hmac
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
@@ -18,12 +19,14 @@ from typing import AsyncIterator, Optional
 
 from dateutil import tz
 from fastapi import FastAPI, Query, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from app.config import Settings, get_settings
+from tools.group_scanner import _username_from_source_link
 from tools.message_store import MessageStore
+from tools.telegram_client import format_msg_link
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +78,26 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     if STATIC_DIR.exists():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+    token = settings.dashboard_token
+    _UNAUTHENTICATED_PATHS = {"/healthz"}
+
+    @app.middleware("http")
+    async def _auth_and_headers(request: Request, call_next):
+        # Bearer-token gate (only active when DASHBOARD_TOKEN is set).
+        if token and request.url.path not in _UNAUTHENTICATED_PATHS \
+                and not request.url.path.startswith("/static"):
+            header = request.headers.get("authorization", "")
+            expected = f"Bearer {token}"
+            # constant-time compare to avoid trivial timing leaks
+            if not hmac.compare_digest(header, expected):
+                return Response(status_code=401, content="Unauthorized")
+
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        return response
+
     @app.get("/", include_in_schema=False)
     async def root() -> RedirectResponse:
         return RedirectResponse("/feed", status_code=302)
@@ -98,13 +121,15 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         )
         groups = await store.list_groups(only_enabled=False)
         groups_by_id = {g.chat_id: g for g in groups}
-        items = [
-            {
+        items = []
+        for m in rows:
+            group = groups_by_id.get(m.chat_id)
+            username = _username_from_source_link(group.source_link) if group else None
+            items.append({
                 "msg": m,
-                "group": groups_by_id.get(m.chat_id),
-            }
-            for m in rows
-        ]
+                "group": group,
+                "link": format_msg_link(m.chat_id, m.tg_msg_id, username=username),
+            })
         template = env.get_template("feed.html")
         html = template.render(
             items=items,

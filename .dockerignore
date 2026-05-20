@@ -1,0 +1,39 @@
+# VCS
+.git
+.gitignore
+.github
+
+# Secrets / state — must never land in an image layer
+.env
+.env.*
+data/
+
+# Python virtualenvs / caches
+.venv/
+venv/
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Docs and tests are not needed at runtime
+README.md
+INSTALL.md
+LICENSE
+tests/
+docs/
+*.md
+
+# Local tooling configs
+.pre-commit-config.yaml
+pytest.ini
+requirements-dev.txt

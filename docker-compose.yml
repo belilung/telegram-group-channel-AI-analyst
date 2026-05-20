@@ -4,13 +4,20 @@ services:
     container_name: telegram-watcher
     restart: unless-stopped
     env_file: .env
+    # Run as the non-root user baked into the image (UID 10001). Match this on
+    # the host if you tighten perms on ./data.
+    user: "10001:10001"
     ports:
+      # Loopback-only by default. To expose externally:
+      #   1. set DASHBOARD_TOKEN=$(openssl rand -hex 32) in .env
+      #   2. set DASHBOARD_HOST=0.0.0.0 in .env (the app refuses non-loopback without a token)
+      #   3. change "127.0.0.1:8000:8000" to "8000:8000" below
       - "127.0.0.1:8000:8000"
     volumes:
       # SQLite + Telethon session persist on host
       - ./data:/app/data
-      # Claude CLI authentication state — login once on host with `claude login`
-      - ~/.claude:/root/.claude
+      # Claude CLI auth — `claude /login` once on the host first
+      - ~/.claude:/home/appuser/.claude:rw
     # NB: setup_session needs interactive stdin once; run:
     #   docker compose run --rm watcher python -m app.setup_session
     # before the first `up -d`.

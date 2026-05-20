@@ -1,5 +1,12 @@
 # Installation
 
+> 🌐 **[English](INSTALL.md)** | **[Русский](INSTALL.ru.md)**
+>
+> **First time? Easier path:** clone the repo, run `claude` in the project
+> directory, and say *"help me set this up"* — Claude will walk you through
+> every step interactively. See [README.md § Quick start](README.md#quick-start-with-claude-code).
+> The doc below is for users who'd rather do it manually.
+
 Two ways to run the watcher: directly with Python, or with Docker.
 Either way you need three things:
 
@@ -69,7 +76,7 @@ Open `.env` and fill in:
 
 ```dotenv
 TG_API_ID=123456
-TG_API_HASH=abcdef0123456789abcdef0123456789
+TG_API_HASH=<your-32-char-hex-from-my.telegram.org>
 TG_PHONE=+380XXXXXXXXX
 TG_SESSION_NAME=telegram_watcher
 CLAUDE_MODEL=claude-haiku-4-5
@@ -194,6 +201,71 @@ If empty, re-run `python -m app.setup_session` with a non-empty
 classification waits for the daily cron.
 
 ---
+
+## Security
+
+The watcher runs from your own Telegram account via MTProto. Treat its state
+files the same way you treat your Telegram login on a new device.
+
+### Lock down secrets on disk
+
+After `cp .env.example .env`, restrict the file to your user:
+
+```bash
+chmod 600 .env
+chmod 700 data/sessions/      # if it already exists
+```
+
+The supervisor and `setup_session` also chmod the `.session`, the SQLite DB,
+and the temporary 2FA-password file to `0600` automatically — but they can
+only do that *after* the file is created. On Windows these calls are silent
+no-ops (NTFS ACLs need a different mechanism).
+
+### Exposing the dashboard outside localhost
+
+The dashboard binds to `127.0.0.1` by default. If you change
+`DASHBOARD_HOST` to anything else (e.g. `0.0.0.0` on a VPS), the supervisor
+**refuses to start** unless `DASHBOARD_TOKEN` is also set. Generate one with:
+
+```bash
+openssl rand -hex 32
+```
+
+Then put it into `.env` as `DASHBOARD_TOKEN=...` and call the dashboard with:
+
+```bash
+curl -H "Authorization: Bearer $DASHBOARD_TOKEN" http://your-host:8000/feed
+```
+
+The `/healthz` endpoint stays open for liveness probes.
+
+### If you suspect your account is compromised
+
+1. Telegram app → **Settings → Devices → Terminate all other sessions**.
+2. <https://my.telegram.org> → **API development tools** → rotate the
+   application: this invalidates the old `api_id`/`api_hash` pair.
+3. Delete `data/sessions/*.session` locally and re-run
+   `python -m app.setup_session` with the new credentials.
+4. If the leak went through a chat or screenshot, also rotate any 2FA cloud
+   password under **Settings → Privacy and Security → Two-Step Verification**.
+
+### Things to know before running
+
+- **Telegram ToS**: monitoring channels via a user account sits in a grey
+  area. Use a **dedicated, secondary phone number** for the watcher rather
+  than your main account.
+- **Shared hosting / multi-tenant boxes**: `.env` and the SQLite DB are
+  visible to anyone with root or the same UID. Prefer a personal VPS, or
+  use Docker secrets / a system keyring.
+- **Pre-commit (optional, for contributors)**: install hooks to block
+  accidental secret commits:
+
+  ```bash
+  pip install pre-commit
+  pre-commit install
+  ```
+
+  The repo ships with `gitleaks` and `detect-private-key` enabled.
 
 ## What to keep private
 

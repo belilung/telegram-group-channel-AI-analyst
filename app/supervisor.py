@@ -52,8 +52,30 @@ async def _seed_watched_groups(
         logger.exception("Failed to seed watched groups; continuing")
 
 
+_LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
+
+
+def _enforce_dashboard_guard(settings: Settings) -> None:
+    """If dashboard binds outside loopback, require a Bearer token."""
+    if settings.dashboard_host in _LOCAL_HOSTS:
+        return
+    if not settings.dashboard_token:
+        raise RuntimeError(
+            f"DASHBOARD_HOST is set to '{settings.dashboard_host}' (non-loopback). "
+            "This exposes the dashboard to the network without authentication. "
+            "Either set DASHBOARD_HOST=127.0.0.1 or set DASHBOARD_TOKEN in .env "
+            "to a strong random string (e.g. `openssl rand -hex 32`)."
+        )
+    logger.warning(
+        "Dashboard exposed on %s:%s — Bearer token required on /feed and /digest",
+        settings.dashboard_host, settings.dashboard_port,
+    )
+
+
 async def supervise(settings: Optional[Settings] = None) -> None:
     settings = settings or get_settings()
+    settings.validate_runtime()
+    _enforce_dashboard_guard(settings)
 
     store = MessageStore(str(settings.db_absolute_path))
     await store.init_schema()

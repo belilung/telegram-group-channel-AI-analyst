@@ -6,6 +6,34 @@ Agents, Tools). The whole thing has one job: watch chosen groups, filter
 noise via Claude, surface relevant items in a local dashboard plus a daily
 digest. No DMs, no leads, no Sheets. Stay focused on this scope.
 
+## First-run onboarding (READ THIS FIRST)
+
+**Before doing anything else, check whether `.env` exists in the project root.**
+
+- **`.env` is missing** → this is a fresh clone. Do NOT write code, do NOT
+  suggest changes. Instead, open [`workflows/onboarding.md`](workflows/onboarding.md)
+  (or [`workflows/onboarding.ru.md`](workflows/onboarding.ru.md) if the user
+  is writing to you in Russian) and walk the user through it **step by step**,
+  asking the questions in order, running the commands on their behalf, and
+  confirming each checkpoint before moving on. The user is likely a first-time
+  Claude Code user — assume zero prior knowledge of Python, Telegram MTProto,
+  or virtualenvs. Greet them and start step 1.
+- **`.env` exists** → setup is already done. Behave normally: implement,
+  refactor, debug, etc., per the rest of this file.
+
+**Sensitive data handling during onboarding:**
+- After the user gives you their `TG_API_HASH`, `TG_PHONE`, or 2FA password,
+  write them into the appropriate file (`.env` or the temp-file stdin
+  mechanism in `app/setup_session.py`) and **never echo them back into the
+  chat transcript**. If you must confirm a value, show only its first 4
+  characters and length: `"api_hash starts with 'cd06' (32 chars total) ✓"`.
+- Never `echo "<password>" | python -m app.setup_session`. The 2FA password
+  flow uses a temp-file callback — use that path.
+
+**Doc-update rule:** when you change any of `README.md`, `INSTALL.md`,
+`workflows/onboarding.md`, update the matching `.ru.md` mirror in the same
+commit. The bilingual docs are mandatory, not optional.
+
 ## The WAT layers
 
 **Workflows (`workflows/`)** — markdown SOPs. They describe the end-to-end

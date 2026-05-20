@@ -27,6 +27,7 @@ from telethon.errors import (
 from telethon.tl.custom.message import Message
 
 from app.config import Settings
+from tools.fs_security import secure_dir, secure_file
 
 if TYPE_CHECKING:
     from tools.message_store import MessageStore
@@ -42,13 +43,26 @@ def build_client(settings: Settings) -> TelegramClient:
     Caller must call `await client.start(phone=settings.tg_phone, ...)` once
     interactively, then `await client.connect()` for subsequent runs.
     """
-    settings.sessions_dir.mkdir(parents=True, exist_ok=True)
+    secure_dir(settings.sessions_dir)
     session_path = str(settings.session_file)
     return TelegramClient(
         session_path,
         api_id=settings.tg_api_id,
         api_hash=settings.tg_api_hash,
     )
+
+
+def secure_session_files(settings: Settings) -> None:
+    """chmod 0600 on every Telethon session file in sessions_dir.
+
+    Telethon creates the .session file lazily during client.start(), so this
+    must be called *after* the first successful login. Best-effort; never raises.
+    """
+    sessions_dir = settings.sessions_dir
+    if not sessions_dir.exists():
+        return
+    for f in sessions_dir.glob("*.session*"):
+        secure_file(f)
 
 
 async def with_flood_retry(

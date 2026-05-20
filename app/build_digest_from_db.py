@@ -20,6 +20,7 @@ from typing import Optional
 from app.config import Settings, get_settings
 from app.run_daily_digest import _window_for_date
 from tools.message_store import MessageStore
+from tools.group_scanner import _username_from_source_link
 from tools.telegram_client import format_msg_link
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ async def _build_for_group(
     chat_id: int,
     since_ts: int,
     until_ts: int,
+    username: Optional[str] = None,
 ) -> int:
     """Read relevant rows from messages, write into daily_digests.
 
@@ -60,7 +62,7 @@ async def _build_for_group(
             "sender_name": r["sender_name"],
             "topic": r["topic"],
             "summary": r["summary"],
-            "link": format_msg_link(chat_id, r["tg_msg_id"]),
+            "link": format_msg_link(chat_id, r["tg_msg_id"], username=username),
         })
     await store.save_digest(date_str, chat_id, items)
     await store.mark_group_scanned(chat_id, until_ts)
@@ -83,7 +85,10 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
 
     total = 0
     for group in groups:
-        n = await _build_for_group(store, args.date, group.chat_id, since_ts, until_ts)
+        username = _username_from_source_link(group.source_link)
+        n = await _build_for_group(
+            store, args.date, group.chat_id, since_ts, until_ts, username=username,
+        )
         total += n
         logger.info("digest date=%s chat_id=%s title=%r items=%s",
                     args.date, group.chat_id, group.title, n)

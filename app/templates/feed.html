@@ -24,6 +24,7 @@
         <th>Sender</th>
         <th>Topic</th>
         <th>Summary</th>
+        <th>Link</th>
         <th>When</th>
       </tr>
     </thead>
@@ -41,6 +42,7 @@
         <td class="muted">{{ it.msg.sender_name or '—' }}</td>
         <td>{% if it.msg.topic %}<strong>{{ it.msg.topic }}</strong>{% else %}<span class="muted">—</span>{% endif %}</td>
         <td style="max-width:520px;line-height:1.5;">{{ it.msg.summary or it.msg.text or '—' }}</td>
+        <td><a href="{{ it.link }}" target="_blank" rel="noopener">open</a></td>
         <td class="mono" style="white-space:nowrap;">{{ it.msg.ts | fmt_ts }}</td>
       </tr>
       {% endfor %}

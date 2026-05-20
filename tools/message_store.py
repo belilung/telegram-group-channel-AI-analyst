@@ -15,9 +15,12 @@ import logging
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from pathlib import Path
 from typing import AsyncIterator, Optional
 
 import aiosqlite
+
+from tools.fs_security import secure_dir, secure_file
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +102,7 @@ class StoredMessage:
 class MessageStore:
     def __init__(self, db_path: str) -> None:
         self._db_path = db_path
+        secure_dir(Path(db_path).parent)
 
     @asynccontextmanager
     async def _conn(self) -> AsyncIterator[aiosqlite.Connection]:
@@ -118,6 +122,9 @@ class MessageStore:
                 stmt = stmt.strip()
                 if stmt:
                     await conn.execute(stmt)
+        # SQLite file exists on disk now; lock it down so it isn't readable
+        # by other users on shared hosts. Best-effort, no-op on Windows.
+        secure_file(self._db_path)
 
     # ----------------------------------------------------------------- messages
 

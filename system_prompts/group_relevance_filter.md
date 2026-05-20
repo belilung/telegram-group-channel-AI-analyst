@@ -34,6 +34,41 @@ Return **valid JSON only**. No prose. No code fences.
 
 # How to decide
 
+## Special handling for `*-jobs` topic hints
+
+If `topic_hint` ends with `-jobs` (e.g. `illustration-jobs`, `gamedev-jobs`,
+`frontend-jobs`), the user only cares about **client-side hiring posts**: a
+company or person announcing that they are **looking to hire / buy** services
+from a professional in the domain.
+
+In that case mark `relevant: true` ONLY when the message clearly says **the
+author is looking for / wants to hire someone** ("Шукаємо дизайнера",
+"Шукаємо motion-дизайнера", "Hiring 2D illustrator", "Ищем художника",
+"Looking for a freelance illustrator", "Замовник шукає", "Потрібен
+ілюстратор", "We need a designer", "Open role / vacancy / вакансія", paid
+gig / project brief with budget or workflow described).
+
+Mark `relevant: false` in these `*-jobs` modes for:
+
+- **Self-promotion by freelancers / agencies**: anyone offering their own
+  services ("Пропоную послуги дизайнера", "Шукаю проєкти", "I'm a freelance
+  illustrator looking for work", "Looking for projects", "Portfolio: …",
+  "Доступна для проєктів"). Even if professional, this is the *supply* side;
+  the user wants the *demand* side only.
+- Course / school / internship offers from students looking for a place.
+- Educational events, webinars, livestreams, speaker announcements.
+- Tool / asset / software releases.
+- Industry news (funding rounds, layoffs, acquisitions) unless they directly
+  contain a specific open job listing.
+- Generic agency / studio promotions without a concrete open role.
+
+When the topic_hint is `*-jobs` and you're unsure whether the post is "we
+hire" vs "I offer my services" — default to `false`.
+
+---
+
+## General mode (topic_hint without `-jobs` suffix)
+
 Mark `relevant: true` when the message clearly fits the `topic_hint` AND
 carries one of these signals:
 

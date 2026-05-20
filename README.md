@@ -1,5 +1,7 @@
 # Telegram Group/Channel AI Analyst
 
+> 🌐 **[English](README.md)** | **[Русский](README.ru.md)**
+
 24/7 watcher for Telegram groups and channels. Connects to Telegram as a
 **user account** via MTProto (not as a bot), listens to messages in the groups
 and channels you choose, runs each message through Claude to filter out the
@@ -9,6 +11,36 @@ daily digest.
 Built on the **WAT framework** (Workflows, Agents, Tools): deterministic
 Python tools do the work, AI handles the decisions, markdown workflows
 document each end-to-end task.
+
+---
+
+## Quick start (with Claude Code)
+
+If you're new to Telegram MTProto, Python virtualenvs, or even Claude Code
+itself — **don't read the docs first**. Just do this:
+
+```bash
+git clone https://github.com/belilung/telegram-group-channel-AI-analyst.git TelegramWatcher
+cd TelegramWatcher
+claude
+```
+
+Then say to Claude:
+
+> **"help me set this up"**
+
+Claude will walk you through every step: getting Telegram API credentials,
+writing `.env`, creating a virtual environment, picking the groups and topic
+you want to monitor, logging in to Telegram, and starting the watcher. About
+10–15 minutes. No prior Python or Telegram-API experience needed.
+
+Prefer to do it manually? Skip to [`INSTALL.md`](INSTALL.md), or see the
+**Manual quick start** section below.
+
+> ⚠️ **You need an active Claude Pro subscription** — the watcher classifies
+> messages through the `claude` CLI, not an Anthropic API key. Install the
+> CLI from <https://claude.ai/code> and run `claude /login` once before
+> starting.
 
 ---
 
@@ -91,9 +123,10 @@ TelegramWatcher/
 
 ---
 
-## Quick start
+## Manual quick start
 
-See `INSTALL.md` for the full step-by-step.
+For users who'd rather not use Claude Code as a wizard. See
+[`INSTALL.md`](INSTALL.md) for the full step-by-step.
 
 In short:
 
